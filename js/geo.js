@@ -294,6 +294,9 @@ function enableMapClick() {
                          document.getElementById("results-list").appendChild(listItem);
 
                          //Hasil reverse osm
+                         if (point) {
+                              map.removeLayer(point);
+                         }
                          point = L.circle([result.lat, result.lon]).addTo(map);
                          point.bindPopup("Hasil Reverse");
                          point.on("mouseover", function (e) {
