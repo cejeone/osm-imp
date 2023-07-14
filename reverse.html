@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+     <head>
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>Search</title>
+
+          <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+          <link rel="stylesheet" href="plugins/leaflet/leaflet.css" />
+          <link rel="stylesheet" href="plugins/leaflet-reachability/leaflet.reachability.css" />
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+          <link rel="stylesheet" href="style/main.css" />
+     </head>
+     <body>
+          <!-- Navbar -->
+          <nav class="navbar navbar-expand-lg navbar-imp blur-background" id="navbar-desktop" aria-label="Offcanvas navbar large">
+               <div class="container-fluid">
+                    <a class="navbar-brand" href="search.html"> <img src="assets/img/osm-imp.png" width="100%" class="d-inline-block align-top" alt="logo inovamap" /></a>
+                    <button
+                         class="navbar-toggler"
+                         type="button"
+                         data-bs-toggle="offcanvas"
+                         data-bs-target="#offcanvasNavbar2"
+                         aria-controls="offcanvasNavbar2"
+                         aria-label="Toggle navigation">
+                         <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="offcanvas offcanvas-end vh-100" tabindex="-1" id="offcanvasNavbar2" aria-labelledby="offcanvasNavbar2Label">
+                         <div class="offcanvas-header">
+                              <h5 class="offcanvas-title" id="offcanvasNavbar2Label">OSM Inovamap</h5>
+                              <button type="button" class="btn-close btn-close-dark" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                         </div>
+                         <div class="offcanvas-body sidenav">
+                              <ul class="navbar-nav justify-content-end flex-grow-1 pe-3 align-items-center">
+                                   <li class="nav-item">
+                                        <a class="nav-link" aria-current="page" href="search.html">Geocoding</a>
+                                   </li>
+                                   <li class="nav-item">
+                                        <a class="nav-link active" href="reverse.html">Reverse</a>
+                                   </li>
+                                   <li class="nav-item">
+                                        <a class="nav-link" href="#">Routing</a>
+                                   </li>
+                                   <li class="nav-item">
+                                        <a class="nav-link" href="#">Isochrone</a>
+                                   </li>
+                              </ul>
+                         </div>
+                    </div>
+               </div>
+          </nav>
+          <!-- End Navbar -->
+
+          <section class="page-content">
+               <div class="container-fluid">
+                    <div class="row mt-3">
+                         <div class="col-lg-4 col-md-12 col-sm-12">
+                              <div class="form-search-box">
+                                   <div class="form-search">
+                                        <input type="text" id="reverseLat" class="form-control" placeholder="Latitude" />
+                                        <input type="text" id="reverseLon" class="form-control" placeholder="Longitude" />
+                                        <button onclick="reverse()" type="button" class="btn btn-search" id="reverse-button">
+                                             <i class="fa-solid fa-magnifying-glass"></i>
+                                        </button>
+
+                                        <button onclick="enableMapClick()" class="btn btn-search"><i class="fa-solid fa-map-marker"></i></button>
+                                   </div>
+                                   <ul id="results-list" class="result-list">
+                                        <!-- <li class="list-item">
+                                             <span class="display-name">graha kapital 1 jalan kemang raya no 4</span>
+                                             <span class="category">Building</span>
+                                        </li> -->
+                                   </ul>
+                              </div>
+                         </div>
+                         <div class="col-lg-8 col-md-12 col-sm-12">
+                              <div class="map-result">
+                                   <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                        <li class="nav-item" role="presentation">
+                                             <button
+                                                  class="nav-link active"
+                                                  id="home-tab"
+                                                  data-bs-toggle="tab"
+                                                  data-bs-target="#home-tab-pane"
+                                                  type="button"
+                                                  role="tab"
+                                                  aria-controls="home-tab-pane"
+                                                  aria-selected="true">
+                                                  Maps
+                                             </button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                             <button
+                                                  class="nav-link"
+                                                  id="profile-tab"
+                                                  data-bs-toggle="tab"
+                                                  data-bs-target="#profile-tab-pane"
+                                                  type="button"
+                                                  role="tab"
+                                                  aria-controls="profile-tab-pane"
+                                                  aria-selected="false">
+                                                  Json
+                                             </button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                             <button
+                                                  class="nav-link"
+                                                  id="contact-tab"
+                                                  data-bs-toggle="tab"
+                                                  data-bs-target="#contact-tab-pane"
+                                                  type="button"
+                                                  role="tab"
+                                                  aria-controls="contact-tab-pane"
+                                                  aria-selected="false">
+                                                  GeoJson
+                                             </button>
+                                        </li>
+                                   </ul>
+                                   <div class="tab-content" id="myTabContent">
+                                        <div class="tab-pane fade show active" id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+                                             <div class="wrapper-map">
+                                                  <div id="map-container"></div>
+                                             </div>
+                                        </div>
+                                        <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
+                                             <pre id="json"></pre>
+                                        </div>
+                                        <div class="tab-pane fade" id="contact-tab-pane" role="tabpanel" aria-labelledby="contact-tab" tabindex="0">
+                                             <pre id="geojson"></pre>
+                                        </div>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+               </div>
+          </section>
+
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+          <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+          <script src="plugins/leaflet/leaflet-src.js"></script>
+          <script src="plugins/leaflet-reachability/leaflet.reachability.js"></script>
+          <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
+          <script src="js/app.js"></script>
+          <script src="js/geo.js"></script>
+          <script src="js/style.js"></script>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+          <script>
+               const mapContainer = document.getElementById("map-container");
+
+               const map = L.map(mapContainer).setView([-5.0139616, 114.712436], 5);
+               L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+               }).addTo(map);
+          </script>
+     </body>
+</html>

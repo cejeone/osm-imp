@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+     <head>
+          <meta charset="UTF-8" />
+          <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>ORS</title>
+
+          <link rel="stylesheet" href="plugins/leaflet/leaflet.css" />
+          <link rel="stylesheet" href="plugins/leaflet-controlgeocoder/Control.Geocoder.css" />
+     </head>
+     <body>
+          <style>
+               body {
+                    width: 100%;
+                    margin: 0;
+               }
+               #map {
+                    height: 100vh;
+                    /* width: 70vw; */
+               }
+               .gjson {
+                    padding: 20px;
+                    height: 100vh;
+                    width: 30vw;
+                    margin: 0;
+               }
+          </style>
+          <div id="map"></div>
+
+          <!-- <code id="gjson" class="gjson"></code> -->
+
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+          <script src="plugins/leaflet/leaflet.js"></script>
+          <script src="plugins/leaflet-controlgeocoder/Control.Geocoder.js"></script>
+
+          <script>
+               let map = L.map("map", {
+                    center: [-6.2, 106.816666],
+                    zoom: 13,
+               });
+
+               L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                    maxZoom: 19,
+               }).addTo(map);
+
+               var geocoder = L.Control.Geocoder.nominatim();
+               if (typeof URLSearchParams !== "undefined" && location.search) {
+                    // parse /?geocoder=nominatim from URL
+                    var params = new URLSearchParams(location.search);
+                    var geocoderString = params.get("geocoder");
+                    if (geocoderString && L.Control.Geocoder[geocoderString]) {
+                         console.log("Using geocoder", geocoderString);
+                         geocoder = L.Control.Geocoder[geocoderString]();
+                    } else if (geocoderString) {
+                         console.warn("Unsupported geocoder", geocoderString);
+                    }
+               }
+
+               var control = L.Control.geocoder({
+                    query: "Moon",
+                    placeholder: "Search here...",
+                    geocoder: geocoder,
+               }).addTo(map);
+               var marker;
+
+               setTimeout(function () {
+                    control.setQuery("Earth");
+               }, 12000);
+
+               map.on("click", function (e) {
+                    geocoder.reverse(e.latlng, map.options.crs.scale(map.getZoom()), function (results) {
+                         var r = results[0];
+                         if (r) {
+                              if (marker) {
+                                   marker
+                                        .setLatLng(r.center)
+                                        .setPopupContent(r.html || r.name)
+                                        .openPopup();
+                              } else {
+                                   marker = L.marker(r.center).bindPopup(r.name).addTo(map).openPopup();
+                              }
+                         }
+                    });
+               });
+
+               //ors
+               // let urlgeojson =
+               //      "http://demo.inovamap.com:8080/ors/v2/directions/driving-car?start=106.81207031120799,-6.2556618070856596&end=106.98341654282325,-6.223806265722399";
+
+               //nominatim
+               // let urlgeojson = "https://demo.inovamap.com/nominatim/reverse.php?format=geojson&lat=-6.255658&lon=106.812100";
+
+               // fetch("http://demo.inovamap.com:8080/ors/v2/directions/driving-car?start=106.79943406115521,-6.2673068580392925&end=107.68999422959305,-6.925118762306832")
+               //      .then((res) => res.json())
+               //      .then((data) => {
+               //           console.log(data);
+               //           var objData = data.data;
+
+               //           L.geoJson(data).addTo(map);
+               //           console.log(objData);
+
+               //           document.getElementById("gjson").innerHTML = JSON.stringify(data);
+               //      });
+          </script>
+          <!-- 
+          <script>
+               var request = new XMLHttpRequest();
+
+               request.open(
+                    "GET",
+                    "http://demo.inovamap.com:8080/ors/v2/directions/driving-car?start=106.81207031120799,-6.2556618070856596&end=106.98341654282325,-6.223806265722399"
+               );
+
+               request.setRequestHeader("Accept", "application/geo+json");
+
+               request.onreadystatechange = function () {
+                    if (this.readyState === 4) {
+                         console.log("Status:", this.status);
+                         console.log("Headers:", this.getAllResponseHeaders());
+                         console.log("Body:", this.responseText);
+                    }
+               };
+
+               request.send();
+          </script> -->
+     </body>
+</html>
